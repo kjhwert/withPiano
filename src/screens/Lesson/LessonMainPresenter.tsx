@@ -19,11 +19,7 @@ export default ({navigation, data, refresh, onRefresh}: IProps) => {
         <RefreshControl refreshing={refresh} onRefresh={onRefresh} />
       }>
       {data.map((data, idx) => (
-        <LessonMain
-          data={data}
-          key={idx}
-          navigation={navigation}
-        />
+        <LessonMain data={data} key={idx} navigation={navigation} />
       ))}
       <View style={{height: 60}} />
     </ScrollView>

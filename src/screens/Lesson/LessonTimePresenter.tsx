@@ -114,9 +114,11 @@ export default ({
                 isTeacherSelected(teacher.id) && styles.teacherSelectedBtnText,
               ]}>
               {teacher.name}
-              {academyType === 'piano' && teacher.major === '재즈'
-                ? '(J)'
-                : '(C)'}
+              {academyType === 'piano'
+                ? teacher.major === '재즈'
+                  ? '(J)'
+                  : '(C)'
+                : ''}
             </Text>
           </TouchableOpacity>
         ))}
