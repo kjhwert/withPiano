@@ -91,22 +91,6 @@ export default (props: IProps) => {
             key={idx}
           />
         ))}
-
-        {/*{state.routeNames.map((route: string, idx: number) => (*/}
-        {/*  <DrawerItem*/}
-        {/*    label={() => (*/}
-        {/*      <View style={styles.drawerContainer}>*/}
-        {/*        <Image source={route[idx]} style={styles.drawerImages} />*/}
-        {/*        <Text style={{color: 'white'}}>{route}</Text>*/}
-        {/*      </View>*/}
-        {/*    )}*/}
-        {/*    onPress={() => {*/}
-        {/*      navigation.navigate(route);*/}
-        {/*    }}*/}
-        {/*    key={idx}*/}
-        {/*    style={state.index === idx ? {backgroundColor: '#000000'} : {}}*/}
-        {/*  />*/}
-        {/*))}*/}
       </DrawerContentScrollView>
       <DrawerItem
         label={() => (

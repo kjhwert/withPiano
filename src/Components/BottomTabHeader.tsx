@@ -86,7 +86,7 @@ export default ({state, descriptors, navigation}: IProps) => {
                 margin: 10,
                 justifyContent: 'center',
                 alignItems: 'center',
-                paddingBottom: 10,
+                paddingBottom: 20,
               }}>
               <Image
                 source={getImage()}

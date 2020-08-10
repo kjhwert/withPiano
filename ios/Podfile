@@ -21,4 +21,6 @@ target 'withPiano' do
   post_install do |installer|
     flipper_post_install(installer)
   end
+
+  pod 'RNFBAnalytics', :path => '../node_modules/@react-native-firebase/analytics'
 end

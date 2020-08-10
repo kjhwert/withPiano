@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Image,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -15,9 +16,13 @@ interface IProps {
   news: Array<INews>;
 }
 
-export default ({navigation, news}: IProps) => {
+export default ({navigation, news, refresh, onRefresh}: IProps) => {
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={refresh} onRefresh={onRefresh} />
+      }>
       <NewsCarousel data={news} navigation={navigation} />
       <View style={styles.notice}>
         <TouchableOpacity

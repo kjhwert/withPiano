@@ -1,7 +1,11 @@
 import messaging from '@react-native-firebase/messaging';
-import {Platform} from 'react-native';
+import {Alert, Platform} from 'react-native';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import PushNotification from 'react-native-push-notification';
 
 class FCMService {
+  enabled = true;
+
   register = (onRegister, onNotification, onOpenNotification) => {
     this.checkPermission(onRegister);
     this.createNotificationListeners(
@@ -55,10 +59,24 @@ class FCMService {
       .requestPermission()
       .then(() => {
         this.getToken(onRegister);
+        this.enabled = true;
       })
       .catch((error) => {
+        this.enabled = false;
         console.log('[FCMService] Request Permission rejected', error);
       });
+  };
+
+  abandonPermission = () => {
+    if (Platform.OS === 'ios') {
+      PushNotificationIOS.abandonPermissions();
+    }
+
+    if (Platform.OS === 'android') {
+      PushNotification.abandonPermission();
+    }
+
+    Alert.alert('푸시알람을 수신거부하셨습니다.');
   };
 
   deleteToken = () => {
@@ -67,6 +85,7 @@ class FCMService {
       .catch((error) => {
         console.log('[FCMService] Delete token error', error);
       });
+    this.enabled = false;
   };
 
   createNotificationListeners = (

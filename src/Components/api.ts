@@ -12,7 +12,7 @@ interface IUserLogin {
 
 const getJson = (res: any) => {
   if (typeof res.data === 'string') {
-    if (res.data === "OK") {
+    if (res.data === 'OK') {
       return res;
     }
 
@@ -65,6 +65,15 @@ export const userApi = {
       return await api.put('/user', {password: pw});
     } catch (e) {
       return getJson(e.response);
+    }
+  },
+  registerToken: async (uuid: string, token: string, user: IUser) => {
+    try {
+      api.defaults.headers.common.Authorization = `Bearer ${user.token}`;
+      await api.post('/alarm/device', {uuid: uuid, token: token});
+      console.log('token Registered');
+    } catch (e) {
+      console.log(e.message);
     }
   },
 };
@@ -160,6 +169,18 @@ export const payment = {
       } = getJson(await api.get('/payments'));
 
       return list[0];
+    } catch (e) {
+      return getJson(e.response);
+    }
+  },
+};
+
+export const notice = {
+  index: async (user: IUser) => {
+    try {
+      api.defaults.headers.common.Authorization = `Bearer ${user.token}`;
+
+      return getJson(await api.get('/alarms'));
     } catch (e) {
       return getJson(e.response);
     }

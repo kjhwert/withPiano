@@ -46,16 +46,17 @@ export default ({
     storeId: 0,
   });
 
-  const activeTeacher = () => {
-    return teachers.filter((item) =>
-      timeSelected.availableTeachers.includes(item.id),
-    );
+  const activeTeacher = (time: ITime) => {
+    return teachers.filter((item) => {
+      return time.availableTeachers.includes(item.id);
+    });
   };
 
-  const [activeTeachers] = useState(activeTeacher);
+  const [activeTeachers, setActiveTeachers] = useState(activeTeacher(times[0]));
 
   const onChangeTime = (time: ITime) => {
     setTimesSelected(time);
+    setActiveTeachers(activeTeacher(time));
   };
 
   const onChangeTeacher = (teacher: ITeacher) => {

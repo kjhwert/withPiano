@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import LessonTimePresenter from './LessonTimePresenter';
 import LessonContext from '../../Components/context/LessonContext';
 import Loading from '../../Components/Loading';

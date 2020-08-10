@@ -1,33 +1,90 @@
-import React, {useState} from 'react';
-import {Image, StyleSheet, Switch, Text, View} from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
+import {
+  Alert,
+  Image,
+  Platform,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
+} from 'react-native';
+import {fcmServices} from '../../FCMService';
+import {localNotificationService} from '../../LocalNotificationService';
+import DeviceInfo from 'react-native-device-info';
+import {userApi} from '../../Components/api';
+import UserContext from '../../Components/context/UserContext';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import messaging from '@react-native-firebase/messaging';
 
-export default () => {
+export default ({data, refresh, onRefresh}) => {
   const [isEnabled, setIsEnabled] = useState(false);
-  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
-  const items = [
-    {
-      regDate: '2020-06-18',
-      title: '신규오픈 파격할인 이벤트 ...',
-      read: 0,
-    },
-    {
-      regDate: '2020-06-17',
-      title: '신규오픈 파격할인 이벤트 ...',
-      read: 1,
-    },
-    {
-      regDate: '2020-06-18',
-      title: '신규오픈 파격할인 이벤트 ...',
-      read: 1,
-    },
-  ];
+  const {user} = useContext(UserContext);
+  const toggleSwitch = async () => {
+    setIsEnabled((previousState) => !previousState);
+    if (isEnabled) {
+      console.log('alarm off');
+      fcmServices.enabled = false;
+      if (Platform.OS === 'ios') {
+        PushNotificationIOS.abandonPermissions();
+      }
+      fcmServices.deleteToken();
+      Alert.alert('푸시알람을 수신거부 하였습니다.');
+    } else {
+      console.log('alarm on');
+      fcmServices.enabled = true;
+
+      fcmServices.registerAppWithFCM();
+      fcmServices.register(onRegister, onNotification, onOpenNotification);
+      localNotificationService.configure(onOpenNotification);
+
+      Alert.alert('푸시알람을 수신허용 하였습니다.');
+
+      async function onRegister(token) {
+        const uuid = DeviceInfo.getUniqueId();
+        console.log(`[App] onRegister token: ${token}`);
+        // console.log(`device uuid: ${uuid}`);
+        await userApi.registerToken(uuid, token, user);
+      }
+
+      function onNotification(notify) {
+        console.log('[App] onNotification: ', notify);
+        const options = {
+          soundName: 'default',
+          playSound: true,
+        };
+
+        localNotificationService.showNotification(
+          0,
+          notify.title,
+          notify.body,
+          notify,
+          options,
+        );
+      }
+
+      function onOpenNotification(notify) {
+        console.log('[App] onOpenNotification: ', notify);
+        Alert.alert(notify.title, notify.body);
+      }
+    }
+  };
 
   const isRead = (read: number) => {
     return read ? styles.read : styles.unRead;
   };
 
+  useEffect(() => {
+    messaging().hasPermission().then(enable => setIsEnabled(enable));
+  }, []);
+
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={refresh} onRefresh={onRefresh} />
+      }>
       <View style={styles.settingContainer}>
         <Text style={styles.settingText}>알림설정</Text>
         <Switch
@@ -38,10 +95,10 @@ export default () => {
           value={isEnabled}
         />
       </View>
-      {items.map((item, idx) => (
+      {data.map((item, idx) => (
         <View key={idx} style={styles.noticeWrapper}>
           <View style={[styles.noticeDateWrapper, isRead(item.read)]}>
-            <Text style={styles.noticeDate}>{item.regDate}</Text>
+            <Text style={styles.noticeDate} />
           </View>
           <View style={styles.noticeContent}>
             <Image
@@ -58,7 +115,7 @@ export default () => {
           </View>
         </View>
       ))}
-    </View>
+    </ScrollView>
   );
 };
 
