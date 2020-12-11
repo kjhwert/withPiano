@@ -18,11 +18,11 @@ import UserContext from '../../Components/context/UserContext';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import messaging from '@react-native-firebase/messaging';
 
-export default ({data, refresh, onRefresh}) => {
-  const [isEnabled, setIsEnabled] = useState(false);
-  const {user} = useContext(UserContext);
+export default ({data, refresh, onRefresh}: any) => {
+  const [isEnabled, setIsEnabled] = useState(fcmServices.enabled);
+  const {user}: any = useContext(UserContext);
   const toggleSwitch = async () => {
-    setIsEnabled((previousState) => !previousState);
+    setIsEnabled(!isEnabled);
     if (isEnabled) {
       console.log('alarm off');
       fcmServices.enabled = false;
@@ -75,9 +75,22 @@ export default ({data, refresh, onRefresh}) => {
     return read ? styles.read : styles.unRead;
   };
 
-  useEffect(() => {
-    messaging().hasPermission().then(enable => setIsEnabled(enable));
-  }, []);
+  const checkPushPermission = () => {
+    if (Platform.OS === 'android') {
+      messaging()
+        .hasPermission()
+        .then((enable) => {
+          if (enable) {
+            setIsEnabled(true);
+          }
+        });
+    }
+    if (Platform.OS === 'ios') {
+      PushNotificationIOS.checkPermissions((result) => console.log(result));
+    }
+  };
+
+  useEffect(() => {}, []);
 
   return (
     <ScrollView

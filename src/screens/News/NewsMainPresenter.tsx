@@ -14,6 +14,8 @@ import {INews} from '../../Components/types/News';
 interface IProps {
   navigation: any;
   news: Array<INews>;
+  refresh: boolean;
+  onRefresh: any;
 }
 
 export default ({navigation, news, refresh, onRefresh}: IProps) => {
@@ -25,11 +27,7 @@ export default ({navigation, news, refresh, onRefresh}: IProps) => {
       }>
       <NewsCarousel data={news} navigation={navigation} />
       <View style={styles.notice}>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('branch');
-          }}
-          style={styles.branchContainer}>
+        <TouchableOpacity style={styles.branchContainer}>
           <Image
             source={require('../../Assets/check.png')}
             style={styles.checkBtn}

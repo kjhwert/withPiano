@@ -4,7 +4,7 @@ import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import PushNotification from 'react-native-push-notification';
 
 class FCMService {
-  enabled = true;
+  enabled = false;
 
   register = (onRegister, onNotification, onOpenNotification) => {
     this.checkPermission(onRegister);
@@ -28,9 +28,12 @@ class FCMService {
       .then((enabled) => {
         if (enabled) {
           // User has permissions
+          this.enabled = true;
+          console.log('permission allowed : ', this.enabled);
           this.getToken(onRegister);
         } else {
           // User doesn't have permission
+          console.log('request permission: ', this.enabled);
           this.requestPermission(onRegister);
         }
       })
@@ -55,11 +58,14 @@ class FCMService {
   };
 
   requestPermission = (onRegister) => {
+    console.log('enabled : ', this.enabled);
     messaging()
       .requestPermission()
-      .then(() => {
-        this.getToken(onRegister);
-        this.enabled = true;
+      .then((enable) => {
+        if (enable) {
+          this.enabled = true;
+          this.getToken(onRegister);
+        }
       })
       .catch((error) => {
         this.enabled = false;
@@ -73,7 +79,7 @@ class FCMService {
     }
 
     if (Platform.OS === 'android') {
-      PushNotification.abandonPermission();
+      PushNotification.abandonPermissions();
     }
 
     Alert.alert('푸시알람을 수신거부하셨습니다.');

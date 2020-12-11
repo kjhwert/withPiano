@@ -1,7 +1,6 @@
 import React, {createContext, useContext, useState} from 'react';
 import {lesson, payment} from '../api';
 import UserContext from './UserContext';
-import {defaultTimes} from '../global';
 
 const LessonContext = createContext({});
 
@@ -131,7 +130,7 @@ export const LessonContextProvider = ({children}) => {
   const getMonth = (d: Date) => {
     return d.getMonth() + 1 < 10
       ? `0${d.getMonth() + 1}`
-      : `${d.getDate() + 1}`;
+      : `${d.getMonth() + 1}`;
   };
 
   return (
